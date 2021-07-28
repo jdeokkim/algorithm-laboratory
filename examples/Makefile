@@ -20,7 +20,7 @@ EXAMPLES = \
     playground
 
 CC := gcc
-CFLAGS := -g -I../include -lm -std=c99 -O0 -D_DEFAULT_SOURCE
+CFLAGS := -g -Isrc/external -I../include -lm -std=c99 -O0 -D_DEFAULT_SOURCE
 
 all: $(EXAMPLES)
 
