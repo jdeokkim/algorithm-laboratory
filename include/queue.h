@@ -116,7 +116,7 @@ QUEUE_DEF int queue_pop(Queue *queue) {
     
     int result = queue->ptr[0];
     
-    memmove(&queue[0], &queue[1], (--queue->length) * sizeof(int));
+    memmove(&queue->ptr[0], &queue->ptr[1], (--queue->length) * sizeof(int));
     
     return result;
 }

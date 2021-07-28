@@ -30,7 +30,7 @@
 
 #define SORT_MAX_ARRAY_LENGTH 20000000
 
-/* 셸 정렬에 사용되는 간격 순열을 나타내는 배열. */
+/* 셸 정렬에 사용되는 커누스 간격 순열을 나타내는 배열. */
 SORT_DEF const int GAP_SEQUENCE[16] = { 
     1, 4, 13, 40, 121, 364, 1093, 3280, 9841, 29524, 
     88573, 265720, 797161, 2391484, 7174453, 21523360
@@ -133,7 +133,29 @@ SORT_DEF void shell_sort(int *ptr, int count) {
     
     if (ptr == NULL || count > SORT_MAX_ARRAY_LENGTH) return;
     
-    /* TODO: ... */
+    int h_index = 0;
+    
+    for (int i = 1; GAP_SEQUENCE[h_index + 1] < count; i++) 
+        h_index = i;
+    
+    // `h`가 1이 될 때까지 배열을 h-정렬시킨다.
+    while (GAP_SEQUENCE[h_index] >= 1) {
+        int h = GAP_SEQUENCE[h_index];
+        
+        // 배열의 매 `h`번째 항목을 부분적으로 삽입 정렬한다.
+        for (int i = h; i < count; i++) {
+            for (int j = i; j >= h; j -= h) {
+                if (ptr[j] > ptr[j - h]) break;
+                
+                int temp_value = ptr[j];
+            
+                ptr[j] = ptr[j - h];
+                ptr[j - h] = temp_value;
+            }
+        }
+        
+        h_index--;
+    } 
 }
 
 #endif // `SORT_IMPLEMENTATION`
