@@ -34,7 +34,7 @@
 typedef struct Queue {
     int length;
     int capacity;
-    int *ptr;
+    unsigned int *ptr;
 } Queue;
 
 /* 큐를 생성한다. */
@@ -53,7 +53,7 @@ QUEUE_DEF int queue_size(Queue *queue);
 QUEUE_DEF bool queue_is_empty(Queue *queue);
 
 /* 큐 `queue`에 값 `value`를 추가한다. */
-QUEUE_DEF void queue_push(Queue *queue, int value);
+QUEUE_DEF void queue_push(Queue *queue, unsigned int value);
 
 /* 큐 `queue`에서 가장 처음에 추가된 값을 제거하고, 그 값을 반환한다. */
 QUEUE_DEF int queue_pop(Queue *queue);
@@ -73,7 +73,7 @@ QUEUE_DEF Queue *queue_create(void) {
     Queue *result = calloc(1, sizeof(Queue));
     
     result->capacity = 8;
-    result->ptr = calloc(result->capacity, sizeof(int));
+    result->ptr = calloc(result->capacity, sizeof(unsigned int));
     
     return result;
 }
@@ -99,12 +99,12 @@ QUEUE_DEF bool queue_is_empty(Queue *queue) {
 }
 
 /* 큐 `queue`에 값 `value`를 추가한다. */
-QUEUE_DEF void queue_push(Queue *queue, int value) {
+QUEUE_DEF void queue_push(Queue *queue, unsigned int value) {
     if (queue == NULL) return;
     
     if (queue->length >= queue->capacity) {
         queue->capacity *= 2;
-        queue->ptr = realloc(queue->ptr, 2 * queue->capacity * sizeof(int));
+        queue->ptr = realloc(queue->ptr, 2 * queue->capacity * sizeof(unsigned int));
     }
     
     queue->ptr[queue->length++] = value;
@@ -116,7 +116,7 @@ QUEUE_DEF int queue_pop(Queue *queue) {
     
     int result = queue->ptr[0];
     
-    memmove(&queue->ptr[0], &queue->ptr[1], (--queue->length) * sizeof(int));
+    memmove(&queue->ptr[0], &queue->ptr[1], (--queue->length) * sizeof(unsigned int));
     
     return result;
 }

@@ -33,7 +33,7 @@
 typedef struct Stack {
     int length;
     int capacity;
-    int *ptr;
+    unsigned int *ptr;
 } Stack;
 
 /* 스택을 생성한다. */
@@ -52,7 +52,7 @@ STACK_DEF int stack_size(Stack *stack);
 STACK_DEF bool stack_is_empty(Stack *stack);
 
 /* 스택 `stack`에 값 `value`를 추가한다. */
-STACK_DEF void stack_push(Stack *stack, int value);
+STACK_DEF void stack_push(Stack *stack, unsigned int value);
 
 /* 스택 `stack`에서 가장 마지막에 추가된 값을 제거하고, 그 값을 반환한다. */
 STACK_DEF int stack_pop(Stack *stack);
@@ -69,7 +69,7 @@ STACK_DEF Stack *stack_create(void) {
     Stack *result = calloc(1, sizeof(Stack));
     
     result->capacity = 8;
-    result->ptr = calloc(result->capacity, sizeof(int));
+    result->ptr = calloc(result->capacity, sizeof(unsigned int));
     
     return result;
 }
@@ -95,12 +95,12 @@ STACK_DEF bool stack_is_empty(Stack *stack) {
 }
 
 /* 스택 `stack`에 값 `value`를 추가한다. */
-STACK_DEF void stack_push(Stack *stack, int value) {
+STACK_DEF void stack_push(Stack *stack, unsigned int value) {
     if (stack == NULL) return;
     
     if (stack->length >= stack->capacity) {
         stack->capacity *= 2;
-        stack->ptr = realloc(stack->ptr, 2 * stack->capacity * sizeof(int));
+        stack->ptr = realloc(stack->ptr, 2 * stack->capacity * sizeof(unsigned int));
     }
     
     stack->ptr[stack->length++] = value;
