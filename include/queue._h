@@ -30,22 +30,11 @@
 
 #define QUEUE_DEF static
 
-/* 큐의 연결 리스트의 항목을 나타내는 구조체. */
-typedef struct QueueNode {
-    unsigned int value;
-    struct QueueNode *next;
-} QueueNode;
-
-/* 큐의 연결 리스트를 나타내는 구조체. */
-typedef struct QueueList {
-    QueueNode *front;
-    QueueNode *back;
-} QueueList;
-
 /* 큐를 나타내는 구조체. */
 typedef struct Queue {
     int length;
-    QueueList *ll;
+    int capacity;
+    unsigned int *ptr;
 } Queue;
 
 /* 큐를 생성한다. */
@@ -83,106 +72,63 @@ QUEUE_DEF int queue_back(Queue *queue);
 QUEUE_DEF Queue *queue_create(void) {
     Queue *result = calloc(1, sizeof(Queue));
     
-    result->ll = calloc(1, sizeof(QueueList));
+    result->capacity = 8;
+    result->ptr = calloc(result->capacity, sizeof(unsigned int));
     
     return result;
 }
 
 /* 큐 `queue`에 할당된 메모리를 해제한다. */
 QUEUE_DEF void queue_release(Queue *queue) {
-    queue_clear(queue);
-    
-    free(queue->ll);
     free(queue);
 }
 
 /* 큐 `queue`에 들어 있는 모든 값을 제거한다. */
 QUEUE_DEF void queue_clear(Queue *queue) {
-    if (queue == NULL || queue->ll == NULL) return;
-    
-    QueueList *ll = queue->ll;
-    
-    QueueNode *front = ll->front;
-    
-    while (front != NULL) {
-        QueueNode *node = front->next;
-        
-        free(front);
-        front = node;
-    }
-    
-    ll->front = ll->back = NULL;
+    if (queue != NULL) queue->length = 0;
 }
 
 /* 큐 `queue`에 들어 있는 값의 개수를 반환한다. */
 QUEUE_DEF int queue_size(Queue *queue) {
-    return (queue != NULL) ? queue->length : 0;
+    return (queue != NULL) ? queue->length : -1;
 }
 
 /* 큐 `queue`이 비어 있는지 확인한다. */
 QUEUE_DEF bool queue_is_empty(Queue *queue) {
-    return (queue == NULL) || (queue != NULL && queue->length == 0);
+    return (queue != NULL && queue->length <= 0);
 }
 
 /* 큐 `queue`에 값 `value`를 추가한다. */
 QUEUE_DEF void queue_push(Queue *queue, unsigned int value) {
-    if (queue == NULL || queue->ll == NULL) return;
+    if (queue == NULL) return;
     
-    QueueList *ll = queue->ll;
-    
-    QueueNode *node = calloc(1, sizeof(QueueNode));
-    node->value = value;
-    
-    if (ll->front == NULL && ll->back == NULL) {
-        ll->front = ll->back = node;
-    } else {
-        ll->back->next = node;
-        ll->back = node;
+    if (queue->length >= queue->capacity) {
+        queue->capacity *= 2;
+        queue->ptr = realloc(queue->ptr, 2 * queue->capacity * sizeof(unsigned int));
     }
     
-    queue->length++;
+    queue->ptr[queue->length++] = value;
 }
 
 /* 큐 `queue`에서 가장 처음에 추가된 값을 제거하고, 그 값을 반환한다. */
 QUEUE_DEF int queue_pop(Queue *queue) {
-    if (queue == NULL || queue->ll == NULL) return -1;
+    if (queue == NULL || queue->length <= 0) return -1;
     
-    QueueList *ll = queue->ll;
+    int result = queue->ptr[0];
     
-    int result = -1;
-    
-    if (ll->front != NULL) {
-        result = ll->front->value;
-            
-        QueueNode *node = ll->front->next;
-        
-        free(ll->front);
-        
-        if (node == NULL) ll->front = ll->back = NULL;
-        else ll->front = node;
-        
-        queue->length--;
-    }
+    memmove(&queue->ptr[0], &queue->ptr[1], (--queue->length) * sizeof(unsigned int));
     
     return result;
 }
 
-/* 큐 `queue`에서 가장 처음에 추가된 값을 반환한다. */
+/* 큐 `queue`에서 가장 처음에 추가된 값을 반환한다.*/
 QUEUE_DEF int queue_front(Queue *queue) {
-    if (queue == NULL || queue->ll == NULL) return -1;
-    
-    QueueList *ll = queue->ll;
-    
-    return (ll->front != NULL) ? ll->front->value : -1;
+    return (queue != NULL && queue->length > 0) ? queue->ptr[0] : -1;
 }
 
 /* 큐 `queue`에서 가장 마지막에 추가된 값을 반환한다. */
 QUEUE_DEF int queue_back(Queue *queue) {
-    if (queue == NULL || queue->ll == NULL) return -1;
-    
-    QueueList *ll = queue->ll;
-    
-    return (ll->back != NULL) ? ll->back->value : -1;
+    return (queue != NULL && queue->length > 0) ? queue->ptr[queue->length - 1] : -1;
 }
 
 #endif // `QUEUE_IMPLEMENTATION`
