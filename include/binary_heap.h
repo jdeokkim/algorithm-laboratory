@@ -98,7 +98,7 @@ BINARY_HEAP_DEF void binary_heap_push(BinaryHeap *heap, unsigned int value) {
     
     if (heap->length >= heap->capacity) {
         heap->capacity *= 2;
-        heap->ptr = realloc(heap->ptr, 2 * heap->capacity * sizeof(unsigned int));
+        heap->ptr = realloc(heap->ptr, heap->capacity * sizeof(unsigned int));
     }
     
     heap->ptr[++heap->length] = value;

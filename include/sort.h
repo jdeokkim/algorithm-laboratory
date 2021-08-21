@@ -45,6 +45,9 @@ SORT_DEF void merge_sort(int *ptr, int count);
 /* 길이가 `count`인 배열 `ptr`을 퀵 정렬한다. */
 SORT_DEF void quick_sort(int *ptr, int count);
 
+/* 길이가 `count`인 정렬된 배열 `ptr`에서 `value`의 인덱스를 찾는다. */
+SORT_DEF int binary_search(int *ptr, int count, int value);
+
 #endif // `SORT_H`
 
 #ifdef SORT_IMPLEMENTATION
@@ -224,11 +227,11 @@ SORT_DEF void merge_sort(int *ptr, int count) {
 
 /* 배열 `ptr`의 부분 배열 `ptr[low..high]`를 적절하게 분할하고, 분할 기준 항목의 인덱스를 반환한다. */
 SORT_DEF int _quick_sort_partition(int *ptr, int low, int high) {
-    int i = low, j = high + 1;
+    int i = low, j = high;
     
     for (;;) {
-        while (ptr[i] < ptr[low] && i < high) i++;
-        while (ptr[j] > ptr[low] && j > low) j--;
+        do { i++; } while (ptr[i] < ptr[low]);
+        do { j--; } while (ptr[j] > ptr[low]);
         
         if (i >= j) break;
         
@@ -274,6 +277,21 @@ SORT_DEF void quick_sort(int *ptr, int count) {
     /* TODO: 퀵 정렬의 실행 시간 예측을 위해 배열을 무작위로 섞기 */
     
     _quick_sort_helper(ptr, 0, count - 1);
+}
+
+/* 길이가 `count`인 정렬된 배열 `ptr`에서 `value`의 인덱스를 찾는다. */
+SORT_DEF int binary_search(int *ptr, int count, int value) {    
+    int low = 0, high = count - 1;
+    
+    while (low <= high) {
+        int mid = (low + high) / 2;
+        
+        if (ptr[mid] < value) low = mid + 1;
+        else if (ptr[mid] > value) high = mid - 1;
+        else return mid;
+    }
+    
+    return -1;
 }
 
 #endif // `SORT_IMPLEMENTATION`
